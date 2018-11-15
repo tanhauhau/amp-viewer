@@ -1383,11 +1383,8 @@ function templateContentClone(template) {
   }
 }
 /**
- * Iterate over an array-like. Some collections like NodeList are
- * lazily evaluated in some browsers, and accessing `length` forces full
- * evaluation. We can improve performance by iterating until an element is
- * `undefined` to avoid checking the `length` property.
- * Test cases: https://jsperf.com/iterating-over-collections-of-elements
+ * Iterate over an array-like.
+ * Test cases: https://jsbench.github.io/#33a883c12f8c75cd5e62bdf12359b8e0
  * @param {!IArrayLike<T>} iterable
  * @param {function(T, number)} cb
  * @template T
@@ -1395,8 +1392,10 @@ function templateContentClone(template) {
 
 
 function iterateCursor(iterable, cb) {
-  for (var i = 0, value; (value = iterable[i]) !== undefined; i++) {
-    cb(value, i);
+  var length = iterable.length;
+
+  for (var i = 0; i < length; i++) {
+    cb(iterable[i], i);
   }
 }
 /**
@@ -3211,7 +3210,7 @@ var ModeDef;
 /** @type {string} */
 
 exports.ModeDef = ModeDef;
-var version = '1811130026410';
+var version = '1811150514390';
 /**
  * `rtvVersion` is the prefixed version we serve off of the cdn.
  * The prefix denotes canary(00) or prod(01) or an experiment version ( > 01).
@@ -3307,10 +3306,10 @@ function getRtvVersion(win, isLocalDev) {
 
   if (win.AMP_CONFIG && win.AMP_CONFIG.v) {
     return win.AMP_CONFIG.v;
-  } // Currently `1811130026410` and thus `mode.version` contain only
+  } // Currently `1811150514390` and thus `mode.version` contain only
   // major version. The full version however must also carry the minor version.
   // We will default to production default `01` minor version for now.
-  // TODO(erwinmombay): decide whether 1811130026410 should contain
+  // TODO(erwinmombay): decide whether 1811150514390 should contain
   // minor version.
 
 
@@ -3553,17 +3552,7 @@ function isArray(value) {
 
 
 function toArray(arrayLike) {
-  if (!arrayLike) {
-    return [];
-  }
-
-  var array = new Array(arrayLike.length);
-
-  for (var i = 0; i < arrayLike.length; i++) {
-    array[i] = arrayLike[i];
-  }
-
-  return array;
+  return arrayLike ? Array.prototype.slice.call(arrayLike) : [];
 }
 /**
  * Determines if value is actually an Object.
